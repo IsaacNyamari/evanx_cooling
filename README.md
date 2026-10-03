@@ -32,14 +32,16 @@ php artisan db:seed --class=ShopSeeder
 php artisan serve
 ```
 
-Create an admin user:
+Create an admin user (public registration is disabled; admins are only created from the terminal):
 
 ```bash
-php artisan tinker
->>> App\Models\User::create(['name' => 'Admin', 'email' => 'you@example.com', 'password' => bcrypt('choose-a-strong-password')]);
+php artisan admin:create
 ```
 
-The site is then at <http://localhost:8000> and the admin at `/admin` (log in at `/login`).
+You are prompted for the name, email and password (hidden, entered twice). The email is marked as verified so the
+admin can sign in straight away at `/login`. The same command works on the server in cPanel Terminal.
+
+The site is then at <http://localhost:8000> and the admin at `/admin` (sign in at `/login`).
 
 ### Environment variables worth knowing
 
@@ -128,7 +130,7 @@ Redirects are configured in `bootstrap/app.php`:
 php artisan test
 ```
 
-Feature tests cover the seeder, public shop, Livewire list filtering, admin CRUD, image uploads (saved, replaced
+Feature tests cover the seeder, disabled registration, the `admin:create` command, public shop, Livewire list filtering, admin CRUD, image uploads (saved, replaced
 and removed from disk, bad files rejected) and the error handling. Two stock Laravel Breeze tests
 (`AuthenticationTest` navigation menu, `PasswordConfirmationTest`) currently fail because they expect a
 `/dashboard` route and this site's admin lives at `/admin`.
