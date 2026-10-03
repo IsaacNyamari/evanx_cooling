@@ -28,7 +28,7 @@ class ShopSeeder extends Seeder
                     ['external_id' => $row['id']],
                     [
                         'name' => $this->brand($row['name']),
-                        'slug' => $row['slug'],
+                        'slug' => Str::slug(urldecode($row['slug'])),
                         'description' => $row['description'] ? $this->brand($row['description']) : null,
                         'image' => $row['image'] ?: null,
                     ]
@@ -52,7 +52,7 @@ class ShopSeeder extends Seeder
                     ['external_id' => $row['id']],
                     [
                         'name' => $this->brand($row['name']),
-                        'slug' => $row['slug'],
+                        'slug' => Str::slug(urldecode($row['slug'])),
                         'sku' => $row['sku'] ?: null,
                         'short_description' => $this->clean($row['short_description']),
                         'description' => $this->clean($row['description']),

@@ -27,6 +27,11 @@ class ShopTest extends TestCase
         $this->assertSame(24, Category::count());
         $this->assertSame(195, Product::count());
         $this->assertSame(0, Product::where('description', 'like', '%coolmas%')->count());
+        // URL-safe slugs and file names (no % escapes or unicode).
+        Product::all()->each(function ($p) {
+            $this->assertMatchesRegularExpression('/^[a-z0-9-]+$/', $p->slug);
+            $this->assertMatchesRegularExpression('/^products\/[A-Za-z0-9._-]+$/', $p->image);
+        });
         // Fresh server: seeding links to the committed public/uploads copies, no remote URLs.
         $this->assertSame(0, Product::where('image', 'like', 'http%')->count());
         Product::all()->each(fn ($p) => $this->assertFileExists(public_path('uploads/'.$p->image)));

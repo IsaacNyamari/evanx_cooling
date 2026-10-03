@@ -98,7 +98,7 @@ class ShopDownloadImages extends Command
         }
 
         $dir = Str::startsWith($slug, 'category-') ? 'categories' : 'products';
-        $path = $dir.'/'.Str::limit($slug, 80, '').'-'.substr(md5($url), 0, 8).'.'.self::EXTENSIONS[$info['mime']];
+        $path = $dir.'/'.Str::limit(Str::slug(urldecode($slug)), 80, '').'-'.substr(md5($url), 0, 8).'.'.self::EXTENSIONS[$info['mime']];
 
         return Storage::disk('uploads')->put($path, $body) ? $path : null;
     }
