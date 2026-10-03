@@ -27,7 +27,8 @@
     <link rel="canonical" href="@yield('canonical', url()->current())">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('img/icon/faviconV2.png') }}">
+    @include('partials.favicon')
+    <meta name="theme-color" content="#e81e25">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
     <title>@yield('code') @yield('title') - {{ config('app.name') }}</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('img/icon/faviconV2.png') }}">
+    @include('partials.favicon')
+    <meta name="theme-color" content="#e81e25">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@600;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
