@@ -133,6 +133,21 @@ robots tag, all produced by `App\Support\Seo`. Nothing is hard-coded in the page
 - **Overview tab**: a 0-100 score with a checklist (HTTPS, sitemap, robots.txt, share image, product photos,
   duplicate titles, hidden pages) and a list of products to improve. Pages and Products tabs show live character
   counters plus Google-result and WhatsApp/Facebook previews while you type.
+- **Generate with AI (Gemini)**: on the product form (new and edit) and in **SEO > Products**, the *Generate with AI*
+  button writes the Google title and meta description from the product's name, category and description. The text is
+  put into the boxes for you to read and adjust; nothing is saved until you press Save. To switch it on, create a key
+  at <https://aistudio.google.com/apikey> and add it to the server `.env`:
+
+  ```
+  GEMINI_API_KEY=your-key
+  GEMINI_MODELS=gemini-flash-lite-latest,gemini-flash-latest
+  ```
+
+  then `php artisan config:cache`. `GEMINI_MODELS` is a list of (free) models tried in order: if the first is out of
+  quota, unknown or down, the next one is used; a rejected key stops straight away. Without a key the button is shown disabled. The key stays on the server and is
+  never sent to the browser. The AI is told to use only facts from the product details, and answers are length-checked
+  (title <= 60, description <= 160 characters, retried once and trimmed if needed). Each admin is limited to 12
+  generations a minute. The product name and description are sent to Google to produce the text.
 - Search-result URLs (`/shop?q=...`) are `noindex`; the admin and login pages are `noindex,nofollow`.
 - Meta keywords are not used: Google ignores them.
 

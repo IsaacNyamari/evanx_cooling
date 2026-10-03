@@ -71,7 +71,8 @@
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header"><strong><i class="fa fa-magnifying-glass me-1"></i> Google / SEO</strong></div>
                 <div class="card-body">
-                    <p class="small text-muted">Leave empty and a good title and description are written automatically. Fill in only to customise.</p>
+                    <p class="small text-muted">Leave empty and a good title and description are written automatically. Fill in only to customise, or let AI write them.</p>
+                    <x-seo.ai-button :enabled="$aiEnabled" :confirm="filled($meta_title) || filled($meta_description)" :error="$aiError" :message="$aiMessage" />
                     <label class="form-label small fw-semibold">Page title</label>
                     <input type="text" wire:model.live.debounce.300ms="meta_title" class="form-control form-control-sm @error('meta_title') is-invalid @enderror" placeholder="Automatic">
                     <x-seo.counter :text="$meta_title" kind="title" />

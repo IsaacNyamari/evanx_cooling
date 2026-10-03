@@ -56,6 +56,7 @@
                     <button wire:click="close" class="btn-close btn-close-white" aria-label="Close"></button>
                 </div>
                 <div class="card-body">
+                    <x-seo.ai-button :enabled="$aiEnabled" :confirm="filled($meta_title) || filled($meta_description)" :error="$aiError" :message="$aiMessage" />
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Page title</label>
                         <input type="text" wire:model.live.debounce.300ms="meta_title" class="form-control @error('meta_title') is-invalid @enderror" placeholder="{{ $editing['auto_title'] }}">

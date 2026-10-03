@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Admin\Seo;
 
+use App\Livewire\Concerns\GeneratesSeoWithAi;
 use App\Models\Product;
+use App\Support\Ai\AiSeoWriter;
 use App\Support\Seo;
 use App\Support\SeoAnalyzer;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -12,6 +14,7 @@ use Livewire\WithPagination;
 
 class Products extends Component
 {
+    use GeneratesSeoWithAi;
     use WithPagination;
 
     protected $paginationTheme = 'bootstrap';
@@ -47,6 +50,17 @@ class Products extends Component
         $this->meta_description = (string) $product->meta_description;
         $this->message = null;
         $this->resetErrorBag();
+    }
+
+    public function generateSeo(): void
+    {
+        $product = Product::with('categories')->findOrFail($this->editingId);
+
+        if ($result = $this->writeWithAi(AiSeoWriter::contextFor($product))) {
+            $this->meta_title = $result['title'];
+            $this->meta_description = $result['description'];
+            $this->resetErrorBag();
+        }
     }
 
     public function useSuggestion(Seo $seo): void
@@ -129,6 +143,6 @@ class Products extends Component
             ];
         }
 
-        return view('livewire.admin.seo.products', ['rows' => $rows, 'editing' => $editing]);
+        return view('livewire.admin.seo.products', ['rows' => $rows, 'editing' => $editing, 'aiEnabled' => $this->aiEnabled()]);
     }
 }

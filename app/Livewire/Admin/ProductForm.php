@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Concerns\GeneratesSeoWithAi;
 use App\Models\Category;
 use App\Models\Product;
 use App\Support\ImageUploader;
@@ -14,6 +15,7 @@ use Livewire\WithFileUploads;
 
 class ProductForm extends Component
 {
+    use GeneratesSeoWithAi;
     use WithFileUploads;
 
     public Product $product;
@@ -168,10 +170,29 @@ class ProductForm extends Component
         }
     }
 
+    /** "Generate with AI": writes the Google title and description from what is typed in the form right now. */
+    public function generateSeo(): void
+    {
+        $result = $this->writeWithAi([
+            'name' => trim($this->name),
+            'categories' => Category::whereIn('id', $this->categoryIds)->pluck('name')->all(),
+            'text' => trim(strip_tags($this->short_description.' '.$this->description)),
+            'price' => (float) $this->price > 0 ? strtoupper($this->currency).' '.number_format((float) $this->price, 0) : null,
+            'sku' => trim($this->sku) ?: null,
+        ]);
+
+        if ($result) {
+            $this->meta_title = $result['title'];
+            $this->meta_description = $result['description'];
+            $this->resetErrorBag(['meta_title', 'meta_description']);
+        }
+    }
+
     public function render()
     {
         return view('livewire.admin.product-form', [
             'categories' => Category::orderBy('name')->get(),
+            'aiEnabled' => $this->aiEnabled(),
         ]);
     }
 }
