@@ -1,11 +1,6 @@
 {{-- resources/views/services/maintenance-repair.blade.php --}}
 @extends('app')
 
-@section('title', 'HVAC Maintenance & Repair Services Nairobi | AC & Heating Experts | ' . config('app.name'))
-
-@section('meta_description', 'Professional HVAC maintenance and repair in Nairobi. {{ config("app.name") }} offers AC servicing, heating system repair, and preventative maintenance plans. Extend equipment life by 40%.')
-
-@section('meta_keywords', 'HVAC maintenance near me, AC repair Nairobi, heating system repair, preventative maintenance HVAC, best HVAC maintenance company, affordable HVAC repair near me, HVAC experts Nairobi')
 
 @section('content')
 <div class="container-xxl py-5">

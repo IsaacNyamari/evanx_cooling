@@ -15,6 +15,9 @@ class ShopController extends Controller
     {
         $product = Product::active()->with('categories')->where('slug', $slug)->firstOrFail();
 
+        // Lets the layout build this product's title, description, share image and structured data.
+        request()->attributes->set('seo.product', $product);
+
         return view('shop.show', compact('product'));
     }
 }

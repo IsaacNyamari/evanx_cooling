@@ -14,6 +14,7 @@ class Product extends Model
     protected $fillable = [
         'external_id', 'name', 'slug', 'sku', 'short_description', 'description',
         'price', 'sale_price', 'currency', 'image', 'gallery', 'in_stock', 'is_active',
+        'meta_title', 'meta_description',
     ];
 
     protected $casts = [

@@ -6,6 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>{{ config('app.name') }} v4 | Dashboard</title>
     @include('partials.favicon')
+    <meta name="robots" content="noindex,nofollow">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!--begin::Accessibility Meta Tags-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
@@ -230,6 +231,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('admin.seo') }}"
+                                class="nav-link {{ request()->routeIs('admin.seo*') ? 'active' : '' }}">
+                                <i class="nav-icon fa fa-chart-line"></i>
+                                <p>SEO</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('admin.sitemap') }}"
                                 class="nav-link {{ request()->routeIs('admin.sitemap') ? 'active' : '' }}">
                                 <i class="nav-icon fa fa-sitemap"></i>
@@ -268,13 +276,13 @@
                     <!--begin::Row-->
                     <div class="row">
                         <div class="col-sm-6">
-                            <h3 class="mb-0 text-capitalize">{{ request()->route()->getName() }}</h3>
+                            <h3 class="mb-0">@yield('heading', \Illuminate\Support\Str::headline(request()->route()->getName()))</h3>
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-end">
                                 <li class="breadcrumb-item"><a href="#">Home</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">
-                                    {{ request()->route()->getName() }}</li>
+                                    @yield('heading', \Illuminate\Support\Str::headline(request()->route()->getName()))</li>
                             </ol>
                         </div>
                     </div>

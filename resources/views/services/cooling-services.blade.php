@@ -1,13 +1,6 @@
 {{-- resources/views/services/cooling-services.blade.php --}}
 @extends('app')
 
-@section('title', 'Cooling Services Near Me | AC Repair & Maintenance Nairobi | ' . config('app.name'))
-
-@section('meta_description', 'Need cooling services near me? {{ config("app.name") }} provides expert AC repair,
-    maintenance, and cooling system services in Nairobi. Same-day service, certified HVAC technicians, affordable rates.')
-
-@section('meta_keywords', 'cooling services near me, AC repair Nairobi, cooling system repair, air conditioner service,
-    HVAC maintenance Nairobi, emergency AC repair, best cooling company near me, HVAC experts Nairobi')
 
 @section('content')
     <div class="container-xxl py-5">

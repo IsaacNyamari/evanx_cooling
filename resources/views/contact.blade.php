@@ -1,16 +1,5 @@
 @extends('app')
 
-@section('title', 'Contact Us - ' . config('app.name') . ' | HVAC Services in Nairobi | Free Quote')
-
-@section('meta_description', 'Contact ' . config('app.name') . ' for professional HVAC services in Nairobi. Call +254 700 123 456, email us, or visit our Westlands office. Get a free quote for AC installation, repair, and maintenance.')
-
-@section('meta_keywords', 'contact HVAC Nairobi, AC repair near me phone number, cooling services contact, heating company Nairobi, book AC service, emergency HVAC contact Nairobi')
-
-@section('og_title', 'Contact ' . config('app.name') . ' - Get a Free HVAC Quote Today')
-
-@section('og_description', 'Need AC installation or repair in Nairobi? Contact our certified HVAC technicians for fast, reliable service. Same-day appointments available.')
-
-@section('canonical', url('/contact'))
 
 @section('content')
     <x-contact />

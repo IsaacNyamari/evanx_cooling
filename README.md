@@ -115,6 +115,30 @@ To update after a push, pull in Git Version Control, then run `composer install 
 `public/build` (compiled CSS/JS) is committed because shared hosting has no Node. After changing
 anything in `resources/css` or `resources/js`, run `npm install && npm run build` locally and commit the result.
 
+## SEO (Admin > SEO)
+
+Every public page gets a unique title, meta description, canonical link, Open Graph / Twitter share tags and a
+robots tag, all produced by `App\Support\Seo`. Nothing is hard-coded in the page templates any more.
+
+- **Pages** (home, shop, services, about, contact, the six service pages): built-in titles (<= 60 characters) and
+  descriptions (<= 160) are used until you override them in **Admin > SEO > Pages**, where you can also set a share
+  image per page or hide a page from Google (`noindex`).
+- **Products**: a title ("Name in Kenya | Evanx Cooling Systems") and description (the first sentences of the product
+  text plus a call to action) are generated automatically. Customise them in **Admin > SEO > Products** or in the
+  product form; empty fields mean "automatic". Product pages also publish `Product` structured data (with an offer
+  only when the product has a price).
+- **Share images (Open Graph)**: products use their own photo; everything else uses the default card
+  `public/img/og-default.jpg` (1200 x 630), or your own upload under **SEO > Pages > Default share image**.
+  Regenerate the default card with `php tools/generate-og-image.php`.
+- **Overview tab**: a 0-100 score with a checklist (HTTPS, sitemap, robots.txt, share image, product photos,
+  duplicate titles, hidden pages) and a list of products to improve. Pages and Products tabs show live character
+  counters plus Google-result and WhatsApp/Facebook previews while you type.
+- Search-result URLs (`/shop?q=...`) are `noindex`; the admin and login pages are `noindex,nofollow`.
+- Meta keywords are not used: Google ignores them.
+
+After submitting the sitemap in Google Search Console, titles and descriptions update the next time Google
+re-crawls a page (use *URL inspection > Request indexing* to speed that up for important pages).
+
 ## Sitemap (Admin > Sitemap)
 
 The admin page generates the sitemap and shows the link to give to Google. It lists the home page, About,
@@ -223,6 +247,7 @@ app/Models               Product, Category (+ Concerns/HasImages), contact messa
 app/Support              ImageUploader
 app/Console/Commands     shop:download-images
 config/site.php          Phone, email and social links
+app/Support/Seo*.php     SEO engine (titles, descriptions, share tags), analyzer and audit
 database/seeders         ShopSeeder and data/ (catalogue snapshot)
 public/uploads           Product and category images (committed)
 resources/views/errors   Error pages

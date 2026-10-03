@@ -59,6 +59,10 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('categories/create', fn () => view('admin.categories.form', ['category' => new Category]))->name('categories.create');
     Route::get('categories/{category}/edit', fn (Category $category) => view('admin.categories.form', compact('category')))->name('categories.edit');
 
+    Route::get('seo', fn () => view('admin.seo', ['tab' => 'overview']))->name('seo');
+    Route::get('seo/pages', fn () => view('admin.seo', ['tab' => 'pages']))->name('seo.pages');
+    Route::get('seo/products', fn () => view('admin.seo', ['tab' => 'products']))->name('seo.products');
+
     Route::view('sitemap', 'admin.sitemap')->name('sitemap');
     Route::get('sitemap/download', [SitemapController::class, 'download'])->name('sitemap.download');
 

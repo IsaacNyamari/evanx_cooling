@@ -5,27 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <title>@yield('title', config('app.name') . ' - Professional HVAC Services in Nairobi')</title>
-    <meta name="description" content="@yield('meta_description', 'Leading HVAC services provider in Nairobi offering AC installation, cooling repair, heating solutions, and maintenance. Certified technicians, 24/7 support.')">
-    <meta name="keywords" content="@yield('meta_keywords', 'HVAC Nairobi, AC installation, cooling repair, heating services, air conditioner maintenance')">
-    <meta name="author" content="@yield('meta_author', config('app.name'))">
-    
-    <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:title" content="@yield('og_title', config('app.name'))">
-    <meta property="og:description" content="@yield('og_description', 'Professional HVAC services in Nairobi')">
-    <meta property="og:image" content="@yield('og_image', asset('img/icon/faviconV2.png'))">
-    <meta property="og:url" content="@yield('canonical', url()->current())">
-    <meta property="og:type" content="website">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="@yield('twitter_card', 'summary')">
-    <meta name="twitter:title" content="@yield('og_title', config('app.name'))">
-    <meta name="twitter:description" content="@yield('og_description', 'Professional HVAC services in Nairobi')">
-    <meta name="twitter:image" content="@yield('og_image', asset('img/icon/faviconV2.png'))">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="@yield('canonical', url()->current())">
-    
+    @include('partials.seo')
+
     <!-- Favicon -->
     @include('partials.favicon')
     <meta name="theme-color" content="#e81e25">

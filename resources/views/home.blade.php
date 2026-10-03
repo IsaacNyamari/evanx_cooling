@@ -1,27 +1,5 @@
 @extends('app')
 
-@section('title', config('app.name') . ' - Professional HVAC Services in Nairobi, Kenya | AC Installation, Repair &
-    Maintenance')
-
-@section('meta_description', 'Looking for trusted HVAC services in Nairobi? ' . config('app.name') . ' offers
-    professional AC installation, cooling system repair, heating services, and preventative maintenance. Certified
-    technicians, 24/7 emergency support. Get a free quote today!')
-
-@section('meta_keywords', 'HVAC services Nairobi, AC installation near me, cooling systems repair, heating services
-    Kenya, air conditioner repair, HVAC experts Nairobi, best HVAC company near me, AC maintenance Nairobi')
-
-@section('meta_author', config('app.name'))
-
-@section('og_title', config('app.name') . ' - Best Heating & Cooling Services in Nairobi')
-
-@section('og_description', 'Professional HVAC services including AC installation, cooling repair, heating solutions, and
-    indoor air quality improvement. Certified technicians serving Nairobi and surrounding areas.')
-
-@section('og_image', asset('img/og-image.jpg'))
-
-@section('twitter_card', 'summary_large_image')
-
-@section('canonical', url()->current())
 
 @section('content')
     <!-- Carousel Start -->

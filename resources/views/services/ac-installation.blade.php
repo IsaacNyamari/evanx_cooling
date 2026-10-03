@@ -1,17 +1,6 @@
 {{-- resources/views/services/ac-installation.blade.php --}}
 @extends('app')
 
-@section('title', 'Professional AC Installation Services in Nairobi Kenya | ' . config('app.name'))
-
-@section('meta_description',
-    'Looking for AC installation near me? {{ config("app.name") }} offers expert air
-    conditioner installation by certified HVAC technicians in Nairobi. Same-day service, competitive pricing, and warranty
-    included.')
-
-@section('meta_keywords',
-    'AC installation near me, air conditioner installation Nairobi, HVAC installation Kenya,
-    central AC installation, split AC installation, commercial AC installation, residential AC installation, best HVAC
-    company near me')
 
 @section('content')
     <div class="container-xxl py-5">

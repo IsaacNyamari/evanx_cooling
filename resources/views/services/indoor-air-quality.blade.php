@@ -1,13 +1,6 @@
 {{-- resources/views/services/indoor-air-quality.blade.php --}}
 @extends('app')
 
-@section('title', 'Indoor Air Quality Solutions Nairobi | Air Purification & Filtration | ' . config('app.name'))
-
-@section('meta_description', "Improve your indoor air quality with {{ config('app.name') }}. Air purifiers, humidifiers,
-    ventilation systems, and UV sanitization. Breathe healthier air in your home or office.")
-
-@section('meta_keywords', 'indoor air quality solutions, air purifier Nairobi, HVAC air filtration, allergen reduction,
-    air quality testing near me, best IAQ company, humidifier installation Nairobi')
 
 @section('content')
     <div class="container-xxl py-5">

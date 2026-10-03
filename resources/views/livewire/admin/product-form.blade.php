@@ -68,6 +68,19 @@
                     @error('categoryIds.*') <div class="text-danger small">{{ $message }}</div> @enderror
                 </div>
             </div>
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header"><strong><i class="fa fa-magnifying-glass me-1"></i> Google / SEO</strong></div>
+                <div class="card-body">
+                    <p class="small text-muted">Leave empty and a good title and description are written automatically. Fill in only to customise.</p>
+                    <label class="form-label small fw-semibold">Page title</label>
+                    <input type="text" wire:model.live.debounce.300ms="meta_title" class="form-control form-control-sm @error('meta_title') is-invalid @enderror" placeholder="Automatic">
+                    <x-seo.counter :text="$meta_title" kind="title" />
+                    <label class="form-label small fw-semibold mt-3">Meta description</label>
+                    <textarea wire:model.live.debounce.300ms="meta_description" rows="3" class="form-control form-control-sm @error('meta_description') is-invalid @enderror" placeholder="Automatic"></textarea>
+                    <x-seo.counter :text="$meta_description" kind="description" />
+                    @if ($product->exists)<a href="{{ route('admin.seo.products', ['q' => $product->name]) }}" class="small d-inline-block mt-2">See the Google preview</a>@endif
+                </div>
+            </div>
             <div class="card shadow-sm border-0">
                 <div class="card-header"><strong>Image</strong></div>
                 <div class="card-body">

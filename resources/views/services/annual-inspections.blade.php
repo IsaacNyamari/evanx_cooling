@@ -1,11 +1,6 @@
 {{-- resources/views/services/annual-inspections.blade.php --}}
 @extends('app')
 
-@section('title', 'Annual HVAC Inspections Nairobi | Preventative Maintenance | ' . config('app.name'))
-
-@section('meta_description', 'Schedule annual HVAC inspections with {{ config("app.name") }}. Comprehensive system checks, safety testing, and performance optimization. Extend equipment life and save on energy bills.')
-
-@section('meta_keywords', 'HVAC inspection near me, annual AC inspection, heating system check, preventative maintenance inspection, best HVAC inspection company Nairobi, home comfort audit, energy efficiency inspection')
 
 @section('content')
 <div class="container-xxl py-5">

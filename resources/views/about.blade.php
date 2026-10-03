@@ -1,14 +1,5 @@
 @extends('app')
 
-@section('title', 'About Us - ' . config('app.name') . ' | Professional HVAC Services in Nairobi, Kenya')
-
-@section('meta_description', 'Learn about ' . config('app.name') . ', Nairobi\'s trusted HVAC company founded by Evans Macharia in 2023. Discover our mission, vision, and commitment to quality heating and cooling services.')
-
-@section('meta_keywords', 'about HVAC company Nairobi, best cooling company Kenya, Evans Macharia, Gas Line Installation Kenya, trusted AC repair near me, HVAC experts story')
-
-@section('og_title', 'About ' . config('app.name') . ' - Your Trusted HVAC Partner in Nairobi')
-
-@section('og_description', 'Discover the story behind ' . config('app.name') . ', founded in 2023 with roots in Gas Line Installation Kenya. We deliver premium heating and cooling services across Nairobi.')
 
 @section('content')
     <x-about />

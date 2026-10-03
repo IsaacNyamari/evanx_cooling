@@ -1,11 +1,6 @@
 {{-- resources/views/services/heating-services.blade.php --}}
 @extends('app')
 
-@section('title', 'Heating System Repair & Installation Nairobi | HVAC Experts | ' . config('app.name'))
-
-@section('meta_description', 'Professional heating services in Nairobi. {{ config("app.name") }} offers furnace repair, heater installation, and boiler services. Trusted HVAC experts keeping your home warm.')
-
-@section('meta_keywords', 'heating services near me, furnace repair Nairobi, heater installation, boiler repair, HVAC heating experts, central heating system, best heating company near me')
 
 @section('content')
 <div class="container-xxl py-5">

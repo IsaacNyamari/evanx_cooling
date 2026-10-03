@@ -18,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(CommandRunner::class, ProcessCommandRunner::class);
         $this->app->bind(Launcher::class, BackgroundLauncher::class);
+        $this->app->scoped(\App\Support\Seo::class);
     }
 
     /**

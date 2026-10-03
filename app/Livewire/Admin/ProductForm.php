@@ -26,6 +26,10 @@ class ProductForm extends Component
 
     public string $short_description = '';
 
+    public string $meta_title = '';
+
+    public string $meta_description = '';
+
     public string $description = '';
 
     public $price = 0;
@@ -56,6 +60,8 @@ class ProductForm extends Component
             $this->slug = $p->slug;
             $this->sku = (string) $p->sku;
             $this->short_description = (string) $p->short_description;
+            $this->meta_title = (string) $p->meta_title;
+            $this->meta_description = (string) $p->meta_description;
             $this->description = (string) $p->description;
             $this->price = $p->price;
             $this->sale_price = $p->sale_price;
@@ -92,6 +98,8 @@ class ProductForm extends Component
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('products', 'slug')->ignore($this->product->id)],
             'sku' => ['nullable', 'string', 'max:100'],
             'short_description' => ['nullable', 'string'],
+            'meta_title' => ['nullable', 'string', 'max:120'],
+            'meta_description' => ['nullable', 'string', 'max:320'],
             'description' => ['nullable', 'string'],
             'price' => ['nullable', 'numeric', 'min:0'],
             'sale_price' => ['nullable', 'numeric', 'min:0', 'lt:price'],
@@ -135,6 +143,8 @@ class ProductForm extends Component
             'slug' => Str::slug($this->slug ?: $this->name),
             'sku' => $this->sku ?: null,
             'short_description' => $this->short_description ?: null,
+            'meta_title' => trim($this->meta_title) ?: null,
+            'meta_description' => trim($this->meta_description) ?: null,
             'description' => $this->description ?: null,
             'price' => $this->price ?: 0,
             'sale_price' => $this->sale_price ?: null,
