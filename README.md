@@ -1,59 +1,153 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Evanx Cooling Systems
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Website and online shop for **Evanx Cooling Systems**, an HVAC and refrigeration company in Nairobi, Kenya.
 
-## About Laravel
+- **Company site:** home, about, services (six service pages), contact form with email delivery, sitemap.
+- **Shop:** 195 HVAC and refrigeration products in 24 categories, with live search, category filtering and "request a quote" (prices are on request until you set them).
+- **Admin:** manage products, categories and customer messages.
+- **Built with:** Laravel 12, Livewire 3 (with Volt), Bootstrap 5 (public site), AdminLTE (admin), Vite, Pest/PHPUnit.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Requirements
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP 8.2+ (8.3 recommended) with the `gd`, `fileinfo`, `mbstring`, `pdo_mysql` extensions
+- Composer 2
+- MySQL / MariaDB (SQLite is used for tests)
+- Node 18+ and npm, only for rebuilding CSS/JS (the built assets in `public/build` are committed)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Local setup
 
-## Learning Laravel
+```bash
+git clone https://github.com/IsaacNyamari/evanx_cooling.git
+cd evanx_cooling
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Edit `.env` (database credentials, mail, `APP_URL`), create the database, then:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+php artisan migrate
+php artisan db:seed --class=ShopSeeder
+php artisan serve
+```
 
-## Laravel Sponsors
+Create an admin user:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+php artisan tinker
+>>> App\Models\User::create(['name' => 'Admin', 'email' => 'you@example.com', 'password' => bcrypt('choose-a-strong-password')]);
+```
 
-### Premium Partners
+The site is then at <http://localhost:8000> and the admin at `/admin` (log in at `/login`).
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Environment variables worth knowing
 
-## Contributing
+| Variable | Purpose |
+| --- | --- |
+| `PHONE`, `CONTACT_EMAIL` | Contact details shown across the site (defaults in `config/site.php`) |
+| `FACEBOOK_URL`, `YOUTUBE_URL` | Social links in the header and footer |
+| `MAIL_*` | SMTP settings for the contact form |
+| `SESSION_DRIVER`, `CACHE_STORE`, `QUEUE_CONNECTION` | `database` in production, so run the migrations first |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Contact details are read through `config('site.*')`, not `env()` in views, so they keep working after `php artisan config:cache`.
 
-## Code of Conduct
+## The shop
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Public URL | What it is |
+| --- | --- |
+| `/shop` | Product list with search, category filter and sorting (state is kept in the URL) |
+| `/shop/{slug}` | Product page with gallery, details, related products and quote buttons |
 
-## Security Vulnerabilities
+| Admin URL (login required) | What it is |
+| --- | --- |
+| `/admin/products` | List, search, filter, toggle Active/In stock, create, edit, delete |
+| `/admin/categories` | The same for categories, with parent/child nesting |
+| `/admin/messages` | Contact form messages |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Everything above is a Livewire component under `app/Livewire/Shop` and `app/Livewire/Admin`.
 
-## License
+### Seeding the catalogue
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+`php artisan db:seed --class=ShopSeeder` imports the catalogue from `database/seeders/data/*.json`
+(a snapshot of the supplier's WooCommerce Store API). It rebrands names and descriptions for Evanx
+Cooling Systems, swaps in our phone and email, and links each product to its categories (a product can
+be in several). The seeder is safe to re-run: it matches on the original IDs, won't duplicate rows, and
+won't overwrite images stored locally.
+
+### Images
+
+Images are stored in `public/uploads/products` and `public/uploads/categories`, **inside `public/`**,
+so they work on shared hosting without `php artisan storage:link`.
+
+- **Admin uploads** go through `App\Support\ImageUploader`, which creates the folder, saves the file and
+  confirms it exists on disk before the database is touched. A failure shows a clear error on the form.
+- **Missing files** fall back to `public/img/placeholder.svg` instead of a broken image.
+- **`php artisan shop:download-images`** downloads any product or category image that is still a remote URL
+  into `public/uploads`. The seeder reuses those local copies, so a fresh server never needs the old site.
+
+## Deploying to cPanel (shared hosting)
+
+1. Clone the repo with **cPanel → Git Version Control** into a folder **outside** `public_html`
+   (for example `/home/USER/evanx_cooling`).
+2. Point the domain's document root at that folder's **`public`** directory.
+3. In cPanel Terminal, inside the clone:
+
+   ```bash
+   composer install --no-dev --optimize-autoloader
+   php artisan migrate --force
+   php artisan db:seed --class=ShopSeeder --force
+   php artisan config:cache && php artisan view:cache
+   ```
+
+   Don't run `route:cache` (some routes are closures).
+4. Create `.env` on the server (it is not in the repo) with production values. In particular:
+   `APP_ENV=production` and `APP_DEBUG=false`, your real `APP_URL`, and the database and SMTP credentials.
+5. Make `storage/`, `bootstrap/cache/` and `public/uploads/` writable (755, or 775 if uploads fail).
+   Livewire parks a picked file in `storage/app/livewire-tmp` first, so uploads fail if `storage/` isn't writable.
+
+To update after a push, pull in Git Version Control, then run `composer install --no-dev -o`,
+`php artisan migrate --force`, `php artisan config:cache` and `php artisan view:cache`.
+
+`public/build` (compiled CSS/JS) is committed because shared hosting has no Node. After changing
+anything in `resources/css` or `resources/js`, run `npm install && npm run build` locally and commit the result.
+
+## Error pages
+
+Branded pages for 401, 403, 404, 405, 419, 429, 500 and 503 live in `resources/views/errors`. They use a
+standalone layout that doesn't touch the database or session, so they still render when those are what failed.
+Redirects are configured in `bootstrap/app.php`:
+
+- an expired form (419) returns the visitor to the previous page with their input and a short notice;
+- opening a POST-only URL in the browser (such as `/send-message`) goes to the contact page, or home otherwise;
+- a signed-out visitor on an unknown `/admin/...` URL is sent to the login page.
+
+## Tests
+
+```bash
+php artisan test
+```
+
+Feature tests cover the seeder, public shop, Livewire list filtering, admin CRUD, image uploads (saved, replaced
+and removed from disk, bad files rejected) and the error handling. Two stock Laravel Breeze tests
+(`AuthenticationTest` navigation menu, `PasswordConfirmationTest`) currently fail because they expect a
+`/dashboard` route and this site's admin lives at `/admin`.
+
+## Project layout
+
+```
+app/Livewire/Shop        Public shop components (product list, product detail)
+app/Livewire/Admin       Admin components (product and category index/form)
+app/Models               Product, Category (+ Concerns/HasImages), contact messages
+app/Support              ImageUploader
+app/Console/Commands     shop:download-images
+config/site.php          Phone, email and social links
+database/seeders         ShopSeeder and data/ (catalogue snapshot)
+public/uploads           Product and category images (committed)
+resources/views/errors   Error pages
+```
+
+## What's next
+
+The shop is currently a catalogue with quote requests. Planned for full e-commerce: a cart, checkout,
+M-Pesa payment and an orders section in the admin.
