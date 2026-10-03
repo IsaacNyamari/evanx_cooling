@@ -43,6 +43,24 @@ trait GeneratesSeoWithAi
         return $result;
     }
 
+    /**
+     * One click: write the title/description with AI and save them on the product.
+     *
+     * @return array{ok:bool,title?:string,message?:string}
+     */
+    protected function generateAndSaveSeo(\App\Models\Product $product): array
+    {
+        $result = $this->writeWithAi(\App\Support\Ai\AiSeoWriter::contextFor($product->loadMissing('categories')));
+
+        if (! $result) {
+            return ['ok' => false, 'message' => $this->aiError];
+        }
+
+        $product->update(['meta_title' => $result['title'], 'meta_description' => $result['description']]);
+
+        return ['ok' => true, 'title' => $result['title']."\n".$result['description']];
+    }
+
     protected function aiEnabled(): bool
     {
         return app(AiSeoWriter::class)->enabled();

@@ -33,7 +33,12 @@
                                 @foreach ([$row['title_rating'], $row['description_rating']] as $rating)
                                     <td class="text-center"><span class="badge text-bg-{{ ['good' => 'success', 'warn' => 'warning', 'bad' => 'danger'][$rating['status']] }}" title="{{ $rating['message'] }}">{{ $rating['length'] }}</span></td>
                                 @endforeach
-                                <td class="text-end pe-3"><button wire:click="edit({{ $p->id }})" class="btn btn-sm btn-outline-primary">Edit</button></td>
+                                <td class="text-end pe-3">
+                                    <div class="d-flex flex-column align-items-end gap-1">
+                                        <x-seo.quick-button :product="$p" :enabled="$aiEnabled" :done="$seoDone[$p->id] ?? null" :error="$seoErrors[$p->id] ?? null" />
+                                        <button wire:click="edit({{ $p->id }})" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                    </div>
+                                </td>
                             </tr>
                         @empty
                             <tr><td colspan="5" class="text-center text-muted py-4">No products match.</td></tr>

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Concerns\GeneratesSeoWithAi;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
@@ -12,6 +13,7 @@ use Livewire\WithPagination;
 
 class ProductIndex extends Component
 {
+    use GeneratesSeoWithAi;
     use WithPagination;
 
     protected $paginationTheme = 'bootstrap';
@@ -21,6 +23,12 @@ class ProductIndex extends Component
 
     #[Url(except: '')]
     public string $category = '';
+
+    /** @var array<int,string> product id => the title/description just written */
+    public array $seoDone = [];
+
+    /** @var array<int,string> product id => why it failed */
+    public array $seoErrors = [];
 
     public function updating($name): void
     {
@@ -53,6 +61,16 @@ class ProductIndex extends Component
         session()->flash('success', 'Product deleted.');
     }
 
+    /** One click on a row: generate the SEO title + description with AI and save them. */
+    public function quickSeo(int $id): void
+    {
+        unset($this->seoDone[$id], $this->seoErrors[$id]);
+
+        $result = $this->generateAndSaveSeo(Product::with('categories')->findOrFail($id));
+
+        $result['ok'] ? $this->seoDone[$id] = $result['title'] : $this->seoErrors[$id] = $result['message'];
+    }
+
     public function render()
     {
         $products = Product::with('categories')
@@ -66,6 +84,7 @@ class ProductIndex extends Component
         return view('livewire.admin.product-index', [
             'products' => $products,
             'categories' => Category::orderBy('name')->get(),
+            'aiEnabled' => $this->aiEnabled(),
         ]);
     }
 }

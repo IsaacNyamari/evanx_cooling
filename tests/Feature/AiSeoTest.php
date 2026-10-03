@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Livewire\Admin\ProductForm;
+use App\Livewire\Admin\ProductIndex;
 use App\Livewire\Admin\Seo\Products;
 use App\Models\Category;
 use App\Models\Product;
@@ -267,6 +268,105 @@ class AiSeoTest extends TestCase
 
         // ...and it is what Google gets.
         $this->assertStringContainsString('<title>Copper Flare Nuts Kenya | Evanx Cooling Systems</title>', $this->get(route('shop.show', 'flare-nuts'))->getContent());
+    }
+
+    public function test_one_click_on_a_list_row_generates_and_saves(): void
+    {
+        $this->seed(ShopSeeder::class);
+        $product = Product::firstWhere('slug', 'flare-nuts');
+        Http::fake([self::URL => Http::response($this->good())]);
+
+        Livewire::test(ProductIndex::class)
+            ->set('q', 'Flare Nuts')
+            ->call('quickSeo', $product->id)
+            ->assertSet("seoErrors.{$product->id}", null)
+            ->assertSee('Done')
+            ->assertSee('Redo');
+
+        $product->refresh();
+        $this->assertSame('Copper Flare Nuts Kenya | Evanx Cooling Systems', $product->meta_title);
+        $this->assertStringContainsString('Order on WhatsApp', $product->meta_description);
+
+        // The prompt used the saved product's own details, and it is live for Google straight away.
+        Http::assertSent(fn (Request $r) => str_contains($r['contents'][0]['parts'][0]['text'], 'Name: Flare Nuts')
+            && str_contains($r['contents'][0]['parts'][0]['text'], 'Category: HVAC Tools'));
+        $this->assertStringContainsString('<title>Copper Flare Nuts Kenya | Evanx Cooling Systems</title>', $this->get(route('shop.show', 'flare-nuts'))->getContent());
+    }
+
+    public function test_row_shows_the_error_and_changes_nothing_when_ai_fails(): void
+    {
+        $this->seed(ShopSeeder::class);
+        $product = Product::firstWhere('slug', 'flare-nuts');
+        $other = Product::where('id', '!=', $product->id)->first();
+        Http::fake([self::URL => Http::response(['error' => ['message' => 'quota']], 429)]);
+
+        Livewire::test(ProductIndex::class)->set('q', 'Flare Nuts')
+            ->call('quickSeo', $product->id)
+            ->assertSet("seoDone.{$product->id}", null)
+            ->assertSee('free quota is used up');
+
+        $this->assertNull($product->fresh()->meta_title);
+        $this->assertNull($other->fresh()->meta_title);
+    }
+
+    public function test_list_buttons_are_disabled_without_a_key_and_nothing_is_sent(): void
+    {
+        $this->seed(ShopSeeder::class);
+        config(['services.gemini.key' => null]);
+        Http::fake();
+
+        $this->get('/admin/products')->assertOk()->assertSee('Add GEMINI_API_KEY to the .env file to enable AI SEO');
+
+        $product = Product::orderBy('name')->first(); // first row of the alphabetical list
+        Livewire::test(ProductIndex::class)->call('quickSeo', $product->id)->assertSee('not set up yet');
+        $this->assertNull($product->fresh()->meta_title);
+        Http::assertNothingSent();
+    }
+
+    public function test_rows_ask_before_replacing_existing_seo_text_and_label_the_state(): void
+    {
+        $this->seed(ShopSeeder::class);
+        Product::firstWhere('slug', 'flare-nuts')->update(['meta_title' => 'My title', 'meta_description' => 'My description']);
+
+        $html = $this->get('/admin/products?q=Flare+Nuts')->assertOk()->getContent();
+        $this->assertStringContainsString('Replace the current SEO title and description', $html);
+        $this->assertStringContainsString('Custom', $html);
+
+        $fresh = $this->get('/admin/products?q=Armaflex')->getContent();
+        $this->assertStringContainsString('AI SEO', $fresh);
+        $this->assertStringNotContainsString('Replace the current SEO title', $fresh);
+        $this->assertStringContainsString('Auto', $fresh);
+    }
+
+    public function test_one_click_also_works_from_the_seo_products_table_and_syncs_the_editor(): void
+    {
+        $this->seed(ShopSeeder::class);
+        $product = Product::firstWhere('slug', 'flare-nuts');
+        Http::fake([self::URL => Http::response($this->good())]);
+
+        Livewire::test(Products::class)
+            ->call('edit', $product->id)
+            ->call('quickSeo', $product->id)
+            ->assertSet('meta_title', 'Copper Flare Nuts Kenya | Evanx Cooling Systems')
+            ->assertSet('meta_description', fn ($v) => str_contains($v, 'Order on WhatsApp'));
+
+        $this->assertSame('Copper Flare Nuts Kenya | Evanx Cooling Systems', $product->fresh()->meta_title);
+    }
+
+    public function test_one_click_counts_towards_the_rate_limit(): void
+    {
+        $this->seed(ShopSeeder::class);
+        $ids = Product::limit(13)->pluck('id');
+        Http::fake([self::URL => Http::response($this->good())]);
+
+        $component = Livewire::test(ProductIndex::class);
+        foreach ($ids as $id) {
+            $component->call('quickSeo', $id);
+        }
+
+        $component->assertSee('a lot of requests');
+        Http::assertSentCount(12);
+        $this->assertSame(12, Product::whereNotNull('meta_title')->count());
     }
 
     public function test_requests_are_rate_limited_per_admin(): void

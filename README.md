@@ -133,6 +133,10 @@ robots tag, all produced by `App\Support\Seo`. Nothing is hard-coded in the page
 - **Overview tab**: a 0-100 score with a checklist (HTTPS, sitemap, robots.txt, share image, product photos,
   duplicate titles, hidden pages) and a list of products to improve. Pages and Products tabs show live character
   counters plus Google-result and WhatsApp/Facebook previews while you type.
+- **One-click AI SEO**: every row of **Admin > Products** (and of **SEO > Products**) has an *AI SEO* button. One click
+  writes the title and description with Gemini and saves them straight away: the button shows *Generating...*, then
+  *Done*, and the row's badge changes from *Auto* to *Custom*. *Redo* replaces it (after a confirmation). Failures are
+  shown on the row and change nothing.
 - **Generate with AI (Gemini)**: on the product form (new and edit) and in **SEO > Products**, the *Generate with AI*
   button writes the Google title and meta description from the product's name, category and description. The text is
   put into the boxes for you to read and adjust; nothing is saved until you press Save. To switch it on, create a key

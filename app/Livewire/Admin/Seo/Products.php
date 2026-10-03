@@ -26,6 +26,12 @@ class Products extends Component
     #[Url(except: '')]
     public string $filter = '';
 
+    /** @var array<int,string> */
+    public array $seoDone = [];
+
+    /** @var array<int,string> */
+    public array $seoErrors = [];
+
     public ?int $editingId = null;
 
     public string $meta_title = '';
@@ -50,6 +56,21 @@ class Products extends Component
         $this->meta_description = (string) $product->meta_description;
         $this->message = null;
         $this->resetErrorBag();
+    }
+
+    /** One click on a row: generate with AI and save straight away. */
+    public function quickSeo(int $id): void
+    {
+        unset($this->seoDone[$id], $this->seoErrors[$id]);
+
+        $result = $this->generateAndSaveSeo(Product::with('categories')->findOrFail($id));
+
+        $result['ok'] ? $this->seoDone[$id] = $result['title'] : $this->seoErrors[$id] = $result['message'];
+
+        // Keep the open editor in step with what was just saved.
+        if ($result['ok'] && $this->editingId === $id) {
+            $this->edit($id);
+        }
     }
 
     public function generateSeo(): void
