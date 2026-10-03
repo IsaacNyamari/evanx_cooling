@@ -45,7 +45,10 @@ class ShopSeeder extends Seeder
             foreach ($products as $row) {
                 $minor = 10 ** ($row['minor_unit'] ?? 2);
                 $existing = Product::where('external_id', $row['id'])->first();
-                $keepImages = $existing && $existing->image && ! Str::startsWith($existing->image, 'http');
+                $keepImages = $existing
+                    && $existing->image
+                    && ! Str::startsWith($existing->image, 'http')
+                    && is_file(public_path('uploads/'.$existing->image)); // stale paths get re-linked
                 $images = array_map(fn ($url) => $this->localImage($url), array_column($row['images'], 'src'));
 
                 $product = Product::updateOrCreate(

@@ -1,5 +1,4 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/jaadpgvr/public_html/
-    - /bin/cp -R public/. $DEPLOYPATH
+    - /bin/echo "public_html is a symlink to public/, nothing to copy"
