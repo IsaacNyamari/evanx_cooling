@@ -1,0 +1,194 @@
+[
+    {
+        "id": 610,
+        "name": "Air Conditioner compressors",
+        "slug": "air-conditioner-compressors",
+        "description": "",
+        "parent": 608,
+        "image": null
+    },
+    {
+        "id": 927,
+        "name": "Air Conditioners",
+        "slug": "air-conditioners",
+        "description": "",
+        "parent": 0,
+        "image": null
+    },
+    {
+        "id": 1500,
+        "name": "Cold room/Cold Store accessories",
+        "slug": "cold-room-cold-store-accessories",
+        "description": "",
+        "parent": 0,
+        "image": null
+    },
+    {
+        "id": 608,
+        "name": "Compressors",
+        "slug": "compressors",
+        "description": "",
+        "parent": 0,
+        "image": null
+    },
+    {
+        "id": 813,
+        "name": "Copper pipe rolls",
+        "slug": "copper-pipe-rolls",
+        "description": "",
+        "parent": 812,
+        "image": null
+    },
+    {
+        "id": 812,
+        "name": "Copper pipes",
+        "slug": "copper-pipes",
+        "description": "",
+        "parent": 0,
+        "image": null
+    },
+    {
+        "id": 609,
+        "name": "Fridge and freezer compressors",
+        "slug": "fridge-and-freezer-compressors",
+        "description": "",
+        "parent": 608,
+        "image": null
+    },
+    {
+        "id": 1439,
+        "name": "Fridge and freezer repair accessories",
+        "slug": "fridge-and-freezer-repair-accessories",
+        "description": "",
+        "parent": 0,
+        "image": null
+    },
+    {
+        "id": 961,
+        "name": "Gree High Wall air conditioners",
+        "slug": "gree-high-wall-air-conditioners",
+        "description": "",
+        "parent": 927,
+        "image": null
+    },
+    {
+        "id": 1205,
+        "name": "HVAC Tools",
+        "slug": "hvac-tools",
+        "description": "",
+        "parent": 0,
+        "image": null
+    },
+    {
+        "id": 588,
+        "name": "Insulation",
+        "slug": "insulation",
+        "description": "",
+        "parent": 0,
+        "image": null
+    },
+    {
+        "id": 1082,
+        "name": "Kitchen gas fittings",
+        "slug": "kitchen-gas-fittings",
+        "description": "",
+        "parent": 0,
+        "image": null
+    },
+    {
+        "id": 928,
+        "name": "LG Air conditioners",
+        "slug": "lg-air-conditioners",
+        "description": "",
+        "parent": 927,
+        "image": null
+    },
+    {
+        "id": 772,
+        "name": "Metallic Inline duct fans",
+        "slug": "metallic-inline-duct-fans",
+        "description": "",
+        "parent": 745,
+        "image": null
+    },
+    {
+        "id": 746,
+        "name": "PVC inline duct fan",
+        "slug": "pvc-inline-duct-fan",
+        "description": "",
+        "parent": 745,
+        "image": null
+    },
+    {
+        "id": 660,
+        "name": "R22 Scroll compressors",
+        "slug": "r22-scroll-compressors",
+        "description": "",
+        "parent": 608,
+        "image": null
+    },
+    {
+        "id": 711,
+        "name": "R410 Scroll Compressors",
+        "slug": "r410-scroll-compressors",
+        "description": "",
+        "parent": 608,
+        "image": null
+    },
+    {
+        "id": 69,
+        "name": "Refrigeration Gases",
+        "slug": "refrigeration-gases",
+        "description": "",
+        "parent": 0,
+        "image": "https://coolmassrefrigeration.com/wp-content/uploads/2023/09/fridge.png"
+    },
+    {
+        "id": 635,
+        "name": "Rotary compressors",
+        "slug": "rotary-compressors",
+        "description": "",
+        "parent": 608,
+        "image": null
+    },
+    {
+        "id": 1100,
+        "name": "School laboratory",
+        "slug": "school-laboratory",
+        "description": "",
+        "parent": 0,
+        "image": null
+    },
+    {
+        "id": 978,
+        "name": "School Laboratory gas fittings",
+        "slug": "school-laboratory-gas-fittings",
+        "description": "",
+        "parent": 0,
+        "image": null
+    },
+    {
+        "id": 854,
+        "name": "Straight copper pipes",
+        "slug": "straight-copper-pipes",
+        "description": "",
+        "parent": 812,
+        "image": null
+    },
+    {
+        "id": 1811,
+        "name": "Tools and accessories",
+        "slug": "tools-and-accessories",
+        "description": "",
+        "parent": 0,
+        "image": null
+    },
+    {
+        "id": 745,
+        "name": "Ventilation",
+        "slug": "ventilation",
+        "description": "",
+        "parent": 0,
+        "image": null
+    }
+]
