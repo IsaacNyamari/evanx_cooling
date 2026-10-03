@@ -1,8 +1,4 @@
 ---
-# cPanel "Git Version Control" → Deploy HEAD Commit runs these tasks.
-# Copies the contents of public/ into the web root (public_html) because the
-# document root can't be pointed at public/ on this hosting plan.
-# Adjust DEPLOYPATH if the web root is not /home/jaadpgvr/public_html.
 deployment:
   tasks:
     - export DEPLOYPATH=/home/jaadpgvr/public_html/
