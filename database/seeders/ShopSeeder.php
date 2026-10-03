@@ -11,7 +11,10 @@ use Illuminate\Support\Str;
 /**
  * Seeds categories and products from the JSON snapshot in database/seeders/data
  * (taken from the supplier's WooCommerce Store API), re-branded for Evanx Cooling Systems.
- * Safe to re-run: records are matched on their external_id.
+ *
+ * Safe to re-run at any time: it adds catalogue items that are missing and repairs broken
+ * slugs / image links on existing ones. Everything else on existing records is left alone,
+ * so edits made in the admin (prices, descriptions, categories...) survive every run.
  */
 class ShopSeeder extends Seeder
 {
@@ -22,55 +25,84 @@ class ShopSeeder extends Seeder
 
         DB::transaction(function () use ($categories, $products) {
             $map = [];
+            $created = [];
 
             foreach ($categories as $row) {
-                $map[$row['id']] = Category::updateOrCreate(
-                    ['external_id' => $row['id']],
-                    [
+                $slug = Str::slug(urldecode($row['slug']));
+                $category = Category::where('external_id', $row['id'])->first();
+
+                if ($category) {
+                    if (! preg_match('/^[a-z0-9-]+$/', $category->slug)) {
+                        $category->update(['slug' => $slug]);
+                    }
+                } else {
+                    $category = Category::create([
+                        'external_id' => $row['id'],
                         'name' => $this->brand($row['name']),
-                        'slug' => Str::slug(urldecode($row['slug'])),
+                        'slug' => $slug,
                         'description' => $row['description'] ? $this->brand($row['description']) : null,
                         'image' => $row['image'] ?: null,
-                    ]
-                );
+                    ]);
+                    $created[$row['id']] = true;
+                }
+
+                $map[$row['id']] = $category;
             }
 
-            // Second pass so parents exist regardless of order.
+            // Second pass so parents exist regardless of order (new categories only).
             foreach ($categories as $row) {
-                if ($row['parent'] && isset($map[$row['parent']])) {
+                if (isset($created[$row['id']]) && $row['parent'] && isset($map[$row['parent']])) {
                     $map[$row['id']]->update(['parent_id' => $map[$row['parent']]->id]);
                 }
             }
 
             foreach ($products as $row) {
-                $minor = 10 ** ($row['minor_unit'] ?? 2);
-                $existing = Product::where('external_id', $row['id'])->first();
-                $keepImages = $existing
-                    && $existing->image
-                    && ! Str::startsWith($existing->image, 'http')
-                    && is_file(public_path('uploads/'.$existing->image)); // stale paths get re-linked
+                $slug = Str::slug(urldecode($row['slug']));
                 $images = array_map(fn ($url) => $this->localImage($url), array_column($row['images'], 'src'));
+                $existing = Product::where('external_id', $row['id'])->first();
 
-                $product = Product::updateOrCreate(
-                    ['external_id' => $row['id']],
-                    [
-                        'name' => $this->brand($row['name']),
-                        'slug' => Str::slug(urldecode($row['slug'])),
-                        'sku' => $row['sku'] ?: null,
-                        'short_description' => $this->clean($row['short_description']),
-                        'description' => $this->clean($row['description']),
-                        'price' => $row['regular_price'] / $minor,
-                        'sale_price' => $row['on_sale'] ? $row['sale_price'] / $minor : null,
-                        'currency' => 'KES',
-                        // Never overwrite images already stored locally (e.g. changed in the admin).
-                        'image' => $keepImages ? $existing->image : ($images[0] ?? null),
-                        'gallery' => $keepImages ? $existing->gallery : (array_slice($images, 1) ?: null),
-                        'in_stock' => $row['in_stock'],
-                    ]
-                );
+                if ($existing) {
+                    $repair = [];
+
+                    if (! preg_match('/^[a-z0-9-]+$/', $existing->slug)) {
+                        $repair['slug'] = $slug;
+                    }
+
+                    // Re-link images only when the stored one is missing, remote or stale.
+                    $imageOk = $existing->image
+                        && ! Str::startsWith($existing->image, 'http')
+                        && is_file(public_path('uploads/'.$existing->image));
+                    if (! $imageOk && $images) {
+                        $repair['image'] = $images[0];
+                        $repair['gallery'] = array_slice($images, 1) ?: null;
+                    }
+
+                    if ($repair) {
+                        $existing->update($repair);
+                    }
+
+                    continue;
+                }
+
+                $minor = 10 ** ($row['minor_unit'] ?? 2);
+
+                $product = Product::create([
+                    'external_id' => $row['id'],
+                    'name' => $this->brand($row['name']),
+                    'slug' => $slug,
+                    'sku' => $row['sku'] ?: null,
+                    'short_description' => $this->clean($row['short_description']),
+                    'description' => $this->clean($row['description']),
+                    'price' => $row['regular_price'] / $minor,
+                    'sale_price' => $row['on_sale'] ? $row['sale_price'] / $minor : null,
+                    'currency' => 'KES',
+                    'image' => $images[0] ?? null,
+                    'gallery' => array_slice($images, 1) ?: null,
+                    'in_stock' => $row['in_stock'],
+                ]);
 
                 $product->categories()->sync(
-                    collect($row['categories'])->map(fn($id) => $map[$id]->id ?? null)->filter()->all()
+                    collect($row['categories'])->map(fn ($id) => $map[$id]->id ?? null)->filter()->all()
                 );
             }
         });
@@ -111,7 +143,7 @@ class ShopSeeder extends Seeder
 
         // Drop links pointing at the old site/social page (keep their text), then rebrand.
         $html = preg_replace('#<a\b[^>]*href="https?://(?:www\.)?(?:coolmassrefrigeration\.com|facebook\.com)[^"]*"[^>]*>(.*?)</a>#is', '$1', $html);
-        $html = preg_replace('#<a\b[^>]*href="mailto:[^"]*"[^>]*>(.*?)</a>#is', '<a href="mailto:' . $email . '">' . $email . '</a>', $html);
+        $html = preg_replace('#<a\b[^>]*href="mailto:[^"]*"[^>]*>(.*?)</a>#is', '<a href="mailto:'.$email.'">'.$email.'</a>', $html);
         $html = preg_replace('#coolmassrefrigeration@yahoo\.com#i', $email, $html);
         $html = preg_replace('#\+254\s?745\s?322\s?538#', $phone, $html);
         $html = $this->brand($html);

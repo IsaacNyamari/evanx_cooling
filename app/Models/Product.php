@@ -79,4 +79,51 @@ class Product extends Model
     {
         return $this->currency.' '.number_format($amount, 0);
     }
+
+    /** First paragraph of the short description as plain text (the rest is contact boilerplate). */
+    public function summary(int $limit = 280): string
+    {
+        $html = (string) $this->short_description;
+
+        if (preg_match('#<p\b[^>]*>(.*?)</p>#is', $html, $match)) {
+            $html = $match[1];
+        }
+
+        $text = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5)));
+
+        return Str::limit($text, $limit);
+    }
+
+    /** The pre-filled order message: product name, short description, price, page link and image link. */
+    public function whatsappMessage(): string
+    {
+        $lines = [
+            'Hello '.config('app.name').', I would like to order this product:',
+            '',
+            '*'.$this->name.'*',
+        ];
+
+        if ($summary = $this->summary()) {
+            $lines[] = $summary;
+        }
+
+        if ($this->hasPrice()) {
+            $lines[] = 'Price: '.$this->formatPrice($this->currentPrice());
+        }
+
+        if ($this->sku) {
+            $lines[] = 'SKU: '.$this->sku;
+        }
+
+        $lines[] = '';
+        $lines[] = 'Product page: '.route('shop.show', $this->slug);
+        $lines[] = 'Image: '.$this->imageUrl();
+
+        return implode("\n", $lines);
+    }
+
+    public function whatsappUrl(): string
+    {
+        return 'https://wa.me/'.config('site.whatsapp').'?text='.rawurlencode($this->whatsappMessage());
+    }
 }

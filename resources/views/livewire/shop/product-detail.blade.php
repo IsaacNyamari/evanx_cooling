@@ -46,7 +46,7 @@
                 <div class="mb-4">{!! $product->short_description !!}</div>
 
                 <div class="d-flex gap-2 flex-wrap mb-4">
-                    <a href="{{ route('contact') }}" wire:navigate class="btn btn-primary"><i class="fa fa-envelope me-2"></i>Request a quote</a>
+                    <a href="{{ $product->whatsappUrl() }}" target="_blank" rel="noopener" class="btn btn-success"><i class="fab fa-whatsapp me-2"></i>Order via WhatsApp</a>
                     <a href="tel:{{ config('site.phone') }}" class="btn btn-outline-primary"><i class="fa fa-phone me-2"></i>Call {{ config('site.phone') }}</a>
                 </div>
 

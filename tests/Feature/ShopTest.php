@@ -38,6 +38,59 @@ class ShopTest extends TestCase
         $this->assertGreaterThan(195, \DB::table('category_product')->count());
     }
 
+    public function test_reseeding_keeps_admin_edits_and_repairs_broken_slugs(): void
+    {
+        $this->seed(ShopSeeder::class);
+
+        $edited = Product::firstWhere('slug', 'flare-nuts');
+        $edited->update(['price' => 1234, 'name' => 'Edited Name', 'is_active' => false]);
+        $edited->categories()->detach();
+
+        $broken = Product::where('id', '!=', $edited->id)->first();
+        $broken->update(['slug' => 'bad%c2%b2-slug', 'image' => 'products/gone.jpg']);
+
+        $this->seed(ShopSeeder::class);
+
+        $edited->refresh();
+        $this->assertSame('Edited Name', $edited->name);
+        $this->assertEquals(1234, $edited->price);
+        $this->assertFalse($edited->is_active);
+        $this->assertCount(0, $edited->categories);
+        $this->assertSame(195, Product::count());
+
+        $broken->refresh();
+        $this->assertMatchesRegularExpression('/^[a-z0-9-]+$/', $broken->slug);
+        $this->assertFileExists(public_path('uploads/'.$broken->image));
+    }
+
+    public function test_whatsapp_order_link_has_title_description_image_and_page_link(): void
+    {
+        $this->seed(ShopSeeder::class);
+        $product = Product::firstWhere('slug', 'flare-nuts');
+
+        $url = $product->whatsappUrl();
+        $this->assertStringStartsWith('https://wa.me/'.config('site.whatsapp').'?text=', $url);
+        $this->assertMatchesRegularExpression('/^\d{10,15}$/', config('site.whatsapp'));
+
+        $message = urldecode(substr($url, strpos($url, 'text=') + 5));
+        $this->assertStringContainsString('*Flare Nuts*', $message);
+        $this->assertStringContainsString('Flare nuts are essential fittings', $message); // short description
+        $this->assertStringContainsString(route('shop.show', 'flare-nuts'), $message);
+        $this->assertStringContainsString($product->imageUrl(), $message);
+        // Contact boilerplate from the description must not leak into the order message.
+        $this->assertStringNotContainsString('Phone:', $message);
+        $this->assertStringNotContainsString('Email:', $message);
+
+        $this->get('/shop/flare-nuts')
+            ->assertOk()
+            ->assertSee('Order via WhatsApp')
+            ->assertSee('https://wa.me/'.config('site.whatsapp'), false)
+            ->assertSee('<meta property="og:image" content="'.$product->imageUrl().'">', false)
+            ->assertDontSee('Request a quote');
+
+        $this->get('/shop')->assertOk()->assertSee('wa.me/'.config('site.whatsapp'), false);
+    }
+
     public function test_public_shop_pages_render(): void
     {
         $this->seed(ShopSeeder::class);

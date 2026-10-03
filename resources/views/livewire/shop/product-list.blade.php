@@ -68,7 +68,10 @@
                                         @else
                                             <div class="mb-2 text-muted small">Price on request</div>
                                         @endif
-                                        <a href="{{ route('shop.show', $product->slug) }}" wire:navigate class="btn btn-sm btn-primary w-100">{{ $product->hasPrice() ? 'View product' : 'View & request quote' }}</a>
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ $product->whatsappUrl() }}" target="_blank" rel="noopener" class="btn btn-sm btn-success flex-grow-1"><i class="fab fa-whatsapp me-1"></i>Order</a>
+                                            <a href="{{ route('shop.show', $product->slug) }}" wire:navigate class="btn btn-sm btn-outline-primary flex-grow-1">Details</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -59,6 +59,11 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('categories/create', fn () => view('admin.categories.form', ['category' => new Category]))->name('categories.create');
     Route::get('categories/{category}/edit', fn (Category $category) => view('admin.categories.form', compact('category')))->name('categories.edit');
 
+    Route::view('sitemap', 'admin.sitemap')->name('sitemap');
+    Route::get('sitemap/download', [SitemapController::class, 'download'])->name('sitemap.download');
+
+    Route::view('deployments', 'admin.deployments')->name('deployments');
+
     Route::view('products', 'admin.products.index')->name('products.index');
     Route::get('products/create', fn () => view('admin.products.form', ['product' => new Product]))->name('products.create');
     Route::get('products/{product}/edit', fn (Product $product) => view('admin.products.form', compact('product')))->name('products.edit');
@@ -67,7 +72,7 @@ Route::post('/send-message/', [ContactPageController::class, 'send'])->name('sen
 
 // Sitemap routes - serve dynamically and generate
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
-Route::get('/generate-sitemap', [SitemapController::class, 'generate'])->middleware(['auth']); // Protect generation with auth
+Route::get('/robots.txt', [SitemapController::class, 'robots']);
 
 Route::get('/admin', function () {
     return view('dashboard');

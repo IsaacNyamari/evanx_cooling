@@ -3,7 +3,7 @@
 Website and online shop for **Evanx Cooling Systems**, an HVAC and refrigeration company in Nairobi, Kenya.
 
 - **Company site:** home, about, services (six service pages), contact form with email delivery, sitemap.
-- **Shop:** 195 HVAC and refrigeration products in 24 categories, with live search, category filtering and "request a quote" (prices are on request until you set them).
+- **Shop:** 195 HVAC and refrigeration products in 24 categories, with live search, category filtering and "Order via WhatsApp" buttons (prices show as "on request" until you set them).
 - **Admin:** manage products, categories and customer messages.
 - **Built with:** Laravel 12, Livewire 3 (with Volt), Bootstrap 5 (public site), AdminLTE (admin), Vite, Pest/PHPUnit.
 
@@ -47,6 +47,7 @@ The site is then at <http://localhost:8000> and the admin at `/admin` (sign in a
 
 | Variable | Purpose |
 | --- | --- |
+| `WHATSAPP_NUMBER` | Number that receives WhatsApp orders, international format e.g. `254707856908` (defaults to `PHONE`) |
 | `PHONE`, `CONTACT_EMAIL` | Contact details shown across the site (defaults in `config/site.php`) |
 | `FACEBOOK_URL`, `YOUTUBE_URL` | Social links in the header and footer |
 | `MAIL_*` | SMTP settings for the contact form |
@@ -59,7 +60,7 @@ Contact details are read through `config('site.*')`, not `env()` in views, so th
 | Public URL | What it is |
 | --- | --- |
 | `/shop` | Product list with search, category filter and sorting (state is kept in the URL) |
-| `/shop/{slug}` | Product page with gallery, details, related products and quote buttons |
+| `/shop/{slug}` | Product page with gallery, details, related products and an "Order via WhatsApp" button |
 
 | Admin URL (login required) | What it is |
 | --- | --- |
@@ -114,6 +115,84 @@ To update after a push, pull in Git Version Control, then run `composer install 
 `public/build` (compiled CSS/JS) is committed because shared hosting has no Node. After changing
 anything in `resources/css` or `resources/js`, run `npm install && npm run build` locally and commit the result.
 
+## Sitemap (Admin > Sitemap)
+
+The admin page generates the sitemap and shows the link to give to Google. It lists the home page, About,
+Services (with the six service pages), Contact, the Shop and every **visible** product (with last-updated date and
+main image). Admin and login pages are never listed.
+
+- **Link to submit:** `https://your-domain/sitemap.xml` (copy button on the page). In Google Search Console go to
+  *Sitemaps*, enter `sitemap.xml` and submit once. Google re-reads it by itself afterwards.
+- The page shows when it was last generated and flags it **Out of date** after products change; click *Regenerate*.
+  *Download sitemap.xml* saves the file if you need to upload it somewhere.
+- Also from the terminal: `php artisan sitemap:generate`. The deploy page regenerates it after each deployment.
+- The file is stored in `storage/app/sitemap.xml` and served by the app, so there is no static file in `public/`
+  to go stale. `/robots.txt` is also generated: it blocks `/admin` and `/login` and points to the sitemap.
+- Category filters are deliberately not listed (to Google they are the same page as `/shop`).
+- On the command line the URLs come from `APP_URL`, so keep it set to the real `https://` address.
+
+## One-click deployments (Admin > Deployments)
+
+After the first manual setup, updates can be done from the admin without cPanel Terminal:
+open **Admin > Deployments**, tick what you want, confirm with your password and press **Deploy now**.
+It runs, in order: `git fetch` + `git reset --hard origin/<branch>`, `composer install --no-dev`,
+`php artisan migrate --force`, `php artisan db:seed --class=ShopSeeder --force`, then clears and
+rebuilds the caches and regenerates the sitemap. The log streams live on the page, and the last 15 runs are kept as history.
+The pipeline stops at the first failing step.
+
+Things to know:
+
+- **Off by default.** Set `DEPLOY_ENABLED=true` in the server `.env` to switch it on (then `php artisan config:cache`).
+  Optionally restrict it with `DEPLOY_ALLOWED_EMAILS=you@example.com,other@example.com`.
+- **Needs your password** for every deployment, and only one deployment can run at a time.
+- **The seeder is safe to run every time.** It only adds missing catalogue items and repairs broken
+  slugs/images; prices, descriptions and categories you edited in the admin are never overwritten.
+- **`git reset --hard`** throws away any changes made directly to tracked files on the server, which is what
+  makes deployments reliable. Untracked files (`.env`, uploaded images, logs) are not touched.
+- **If the host blocks background processes** (the page will say so), deployments are queued and picked up by the
+  Laravel scheduler. Add this once in cPanel > Cron Jobs (every minute); the page shows the exact line for your server:
+
+  ```
+  * * * * * cd /home/USER/evanx_cooling && /usr/local/bin/php artisan schedule:run >> /dev/null 2>&1
+  ```
+- If it can't find `php` or `composer`, set `DEPLOY_PHP_BINARY` / `DEPLOY_COMPOSER` in `.env`.
+
+The first time you enable it, update the server by hand once (`git pull`, `composer install --no-dev -o`,
+`php artisan migrate --force`) so the page and its table exist. After that it can update itself.
+
+## Private repository
+
+The repository can be private. The server then needs read access of its own, using a **deploy key**
+(a key that can read just this one repository). On the server, in cPanel Terminal:
+
+```bash
+ssh-keygen -t ed25519 -C "evanx-deploy" -f ~/.ssh/evanx_deploy -N ""
+cat ~/.ssh/evanx_deploy.pub          # copy this
+```
+
+1. On GitHub: repository > **Settings > Deploy keys > Add deploy key**, paste the key, leave "Allow write access" **off**.
+2. Tell SSH to use that key for GitHub, by adding this to `~/.ssh/config` (create it if missing, then `chmod 600 ~/.ssh/config`):
+
+   ```
+   Host github.com
+       HostName github.com
+       User git
+       IdentityFile ~/.ssh/evanx_deploy
+       IdentitiesOnly yes
+   ```
+3. Switch the server's remote to SSH and test it:
+
+   ```bash
+   cd ~/evanx_cooling
+   ssh-keyscan github.com >> ~/.ssh/known_hosts
+   git remote set-url origin git@github.com:IsaacNyamari/evanx_cooling.git
+   git fetch      # should succeed with no password prompt
+   ```
+4. Only then make the repository private (GitHub > Settings > General > Danger Zone > Change visibility).
+
+If the key is stored somewhere other than `~/.ssh/config` can reach, set `DEPLOY_SSH_KEY=/home/USER/.ssh/evanx_deploy` in `.env`.
+Never put a personal access token in the remote URL; deploy keys are safer because they are read-only and tied to this repository.
+
 ## Error pages
 
 Branded pages for 401, 403, 404, 405, 419, 429, 500 and 503 live in `resources/views/errors`. They use a
@@ -151,5 +230,5 @@ resources/views/errors   Error pages
 
 ## What's next
 
-The shop is currently a catalogue with quote requests. Planned for full e-commerce: a cart, checkout,
+The shop is currently a catalogue where customers order through WhatsApp. Planned for full e-commerce: a cart, checkout,
 M-Pesa payment and an orders section in the admin.

@@ -229,6 +229,22 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('admin.sitemap') }}"
+                                class="nav-link {{ request()->routeIs('admin.sitemap') ? 'active' : '' }}">
+                                <i class="nav-icon fa fa-sitemap"></i>
+                                <p>Sitemap</p>
+                            </a>
+                        </li>
+                        @if (\App\Deploy\Access::allows(auth()->user()))
+                            <li class="nav-item">
+                                <a href="{{ route('admin.deployments') }}"
+                                    class="nav-link {{ request()->routeIs('admin.deployments') ? 'active' : '' }}">
+                                    <i class="nav-icon fa fa-rocket"></i>
+                                    <p>Deployments</p>
+                                </a>
+                            </li>
+                        @endif
+                        <li class="nav-item">
                             <a href="{{ route('profile') }}"
                                 class="nav-link {{ request()->routeIs('profile') ? 'active' : '' }}">
                                 <i class="nav-icon fa fa-user-shield"></i>
